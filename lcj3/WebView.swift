@@ -10,14 +10,17 @@ import WebKit
 
 struct WebView: UIViewRepresentable {
     typealias UIViewType = WKWebView
-    let webView: WKWebView = WKWebView()
+    //let webConfig: WKWebViewConfiguration
+    //let webView: WKWebView = WKWebView(frame: .zero, configuration: webConfig)
     let target: String
     
     func makeUIView(context: Context) -> WKWebView {
-        webView.configuration.allowsInlineMediaPlayback = true
-        webView.configuration.allowsPictureInPictureMediaPlayback = true
-        webView.load(.init(url: URL(string: "https://youtube.com/embed/\(target)?autoplay=1&modestbranding=1&playsinline=1")!))
+        let webConfig = WKWebViewConfiguration()
+        webConfig.allowsInlineMediaPlayback = true
+        webConfig.allowsPictureInPictureMediaPlayback = true
+        let webView = WKWebView(frame: .zero, configuration: webConfig)
         
+        webView.load(.init(url: URL(string: "https://youtube.com/embed/\(target)?playsinline=1")!))
         return webView
     }
     

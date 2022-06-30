@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     struct Video: Identifiable {
-        let thumbnail: Image?
+        let thumbnail: String
         let title: String
         let description: String
         let views: String
@@ -18,19 +18,26 @@ struct ContentView: View {
     }
     
     var videoArr: [Video] = [
-        Video(thumbnail: Image(systemName: "circle"), title: "Rick Astley - Never Gonna Give You Up (Official Music Video)", description: "9iNxhEn", views: "1240134028", author: "Rick Astley", id: "9iNxhEn-9D4"),
-        Video(thumbnail: Image(systemName: "square"), title: "Title2", description: "Description2", views: "2934", author: "Author", id: "Gc3tqnhmf5U"),
-        Video(thumbnail: Image(systemName: "circle.fill"), title: "Title3", description: "Description", views: "298", author: "Author", id: "545"),
-        Video(thumbnail: Image(systemName: "triangle"), title: "Title4", description: "Description", views: "923199999999", author: "Author", id: "546")
+        Video(thumbnail: "https://i3.ytimg.com/vi/9iNxhEn-9D4/maxresdefault.jpg", title: "Rick Astley - Never Gonna Give You Up (Official Music Video)", description: "9iNxhEn", views: "1240134028", author: "Rick Astley", id: "9iNxhEn-9D4"),
+        Video(thumbnail: "https://i3.ytimg.com/vi/Gc3tqnhmf5U/maxresdefault.jpg", title: "Oblivion (Placeholder)", description: "By theFatRat", views: "10000000", author: "TheFatRat", id: "Gc3tqnhmf5U"),
+        Video(thumbnail: "https://i3.ytimg.com/vi/-WpnPSChVRQ/maxresdefault.jpg", title: "[Full Song/Official Lyrics] Devil Trigger - Nero's battle theme from Devil May Cry 5", description: "Devil Trigger - Nero's Battle Theme from Devil May Cry 5 by Casey Edwards feat. Ali Edwards and Cliff Lloret", views: "56591174", author: "R H", id: "-WpnPSChVRQ"),
+        Video(thumbnail: "https://i3.ytimg.com/vi/RjLWGyx4zoA/hqdefault.jpg", title: "Persona 5-Battle Victory Theme(Extended)", description: "This was so d*mn catchy I couldn't help myself. I do not own the \"Persona\" series in any form or fashion. I do not own the pictures used in this video, nor do I own the original soundtrack played in this video. All rights reserved to Atlus.", views: "864098", author: "Hey Arnold", id: "RjLWGyx4zoA")
     ]
     
     var body: some View {
         NavigationView {
             List {
                 ForEach(videoArr) { subject in
-                    NavigationLink(destination: VideoView(title: subject.title, author: subject.author, description: subject.description, views: subject.views.FormatCool,videoId: subject.id)) {
+                    ZStack {
+                        NavigationLink(destination: VideoView(title: subject.title, author: subject.author, description: subject.description, views: subject.views.FormatCool,videoId: subject.id)) {
+                            
+                        }
                         VStack() {
-                            subject.thumbnail?.resizable().aspectRatio(16/9, contentMode: .fit)
+                            AsyncImage(url: URL(string: subject.thumbnail)) { Image in
+                                Image.resizable().aspectRatio(16/9, contentMode: .fit)
+                            } placeholder: {
+                                ProgressView().aspectRatio(16/9, contentMode: .fit)
+                            }
                             HStack() {
                                 VStack(alignment: .leading) {
                                     Text(subject.title).font(.callout)
@@ -38,12 +45,13 @@ struct ContentView: View {
                                 }
                                 Spacer()
                                 Text("\(subject.views.Abbreviate)\n views").multilineTextAlignment(.center).font(.subheadline)
-                            }
-                            
+                            }.padding(.horizontal).padding(.bottom)
+                            Divider().frame(height:10).overlay(.green)
                         }
-                    }
+                    }.listRowInsets(EdgeInsets())
+                    
                 }
-            }.navigationTitle("LCJ3 r2").navigationBarTitleDisplayMode(.inline)
+            }.navigationTitle("LCJ3 r2").navigationBarTitleDisplayMode(.inline).listStyle(.plain)
             
         }.navigationViewStyle(DoubleColumnNavigationViewStyle())
     }

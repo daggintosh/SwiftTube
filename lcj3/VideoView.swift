@@ -32,7 +32,7 @@ struct VideoView: View {
             }.padding(.horizontal)
             Divider().padding(.horizontal)
             Spacer()
-        }
+        }.navigationTitle(title)
     }
 }
 
