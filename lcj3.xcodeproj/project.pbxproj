@@ -14,6 +14,7 @@
 		183E7E69286D04590083BDD8 /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183E7E68286D04590083BDD8 /* VideoView.swift */; };
 		183E7E6B286D06560083BDD8 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183E7E6A286D06560083BDD8 /* WebView.swift */; };
 		1849C672286BA41500887468 /* Abbreviate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1849C671286BA41500887468 /* Abbreviate.swift */; };
+		186768C7286E489B00629B46 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 186768C6286E489B00629B46 /* .gitignore */; };
 		1867FDB5286E453E00148758 /* APIKey.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1867FDB4286E453E00148758 /* APIKey.plist */; };
 		18A59A56286DEC07007928C3 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A59A55286DEC07007928C3 /* SearchView.swift */; };
 		18A59A58286DF640007928C3 /* SearchLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A59A57286DF640007928C3 /* SearchLogic.swift */; };
@@ -29,6 +30,7 @@
 		183E7E6A286D06560083BDD8 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		183E7E6C286D17190083BDD8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1849C671286BA41500887468 /* Abbreviate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Abbreviate.swift; sourceTree = "<group>"; };
+		186768C6286E489B00629B46 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		1867FDB4286E453E00148758 /* APIKey.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = APIKey.plist; sourceTree = "<group>"; };
 		18A59A55286DEC07007928C3 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		18A59A57286DF640007928C3 /* SearchLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLogic.swift; sourceTree = "<group>"; };
@@ -49,6 +51,7 @@
 			isa = PBXGroup;
 			children = (
 				1867FDB4286E453E00148758 /* APIKey.plist */,
+				186768C6286E489B00629B46 /* .gitignore */,
 				1827C52C286B6D9D000FDED1 /* lcj3 */,
 				1827C52B286B6D9D000FDED1 /* Products */,
 			);
@@ -145,6 +148,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				186768C7286E489B00629B46 /* .gitignore in Resources */,
 				1827C535286B6D9E000FDED1 /* Preview Assets.xcassets in Resources */,
 				1867FDB5286E453E00148758 /* APIKey.plist in Resources */,
 				1827C532286B6D9E000FDED1 /* Assets.xcassets in Resources */,
