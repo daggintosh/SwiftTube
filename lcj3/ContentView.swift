@@ -45,10 +45,10 @@ struct ContentView: View {
                                 }
                                 Spacer()
                                 Text("\(subject.views.Abbreviate)\n views").multilineTextAlignment(.center).font(.subheadline)
-                            }.padding(.horizontal).padding(.bottom)
-                            Divider().frame(height:10).overlay(.green)
+                            }.padding(.horizontal)
+                            Divider().frame(height:10).overlay(.bar)
                         }
-                    }.listRowInsets(EdgeInsets())
+                    }.listRowInsets(EdgeInsets()).listRowSeparator(.hidden)
                     
                 }
             }.navigationTitle("LCJ3 r2").navigationBarTitleDisplayMode(.inline).listStyle(.plain)
