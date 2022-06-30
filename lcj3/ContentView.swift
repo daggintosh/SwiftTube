@@ -17,6 +17,9 @@ struct ContentView: View {
         let id: String
     }
     
+    var resultsTitle: String = "Home"
+    var displaySearch: Bool = true
+    
     var videoArr: [Video] = [
         Video(thumbnail: "https://i3.ytimg.com/vi/9iNxhEn-9D4/maxresdefault.jpg", title: "Rick Astley - Never Gonna Give You Up (Official Music Video)", description: "9iNxhEn", views: "1240134028", author: "Rick Astley", id: "9iNxhEn-9D4"),
         Video(thumbnail: "https://i3.ytimg.com/vi/Gc3tqnhmf5U/maxresdefault.jpg", title: "Oblivion (Placeholder)", description: "By theFatRat", views: "10000000", author: "TheFatRat", id: "Gc3tqnhmf5U"),
@@ -51,9 +54,18 @@ struct ContentView: View {
                     }.listRowInsets(EdgeInsets()).listRowSeparator(.hidden)
                     
                 }
-            }.navigationTitle("LCJ3 r2").navigationBarTitleDisplayMode(.inline).listStyle(.plain)
+            }.navigationTitle(resultsTitle).navigationBarTitleDisplayMode(.inline).listStyle(.plain).toolbar {
+                NavigationLink {
+                    SearchView()
+                } label: {
+                    if displaySearch {
+                        Image(systemName: "magnifyingglass")
+                    }
+                }
+
+            }
             
-        }.navigationViewStyle(DoubleColumnNavigationViewStyle())
+        }
     }
 }
 
