@@ -48,6 +48,7 @@
 		1827C521286B6D9D000FDED1 = {
 			isa = PBXGroup;
 			children = (
+				1867FDB4286E453E00148758 /* APIKey.plist */,
 				1827C52C286B6D9D000FDED1 /* lcj3 */,
 				1827C52B286B6D9D000FDED1 /* Products */,
 			);
@@ -64,7 +65,6 @@
 		1827C52C286B6D9D000FDED1 /* lcj3 */ = {
 			isa = PBXGroup;
 			children = (
-				1867FDB4286E453E00148758 /* APIKey.plist */,
 				183E7E6C286D17190083BDD8 /* Info.plist */,
 				183E7E68286D04590083BDD8 /* VideoView.swift */,
 				1827C52D286B6D9D000FDED1 /* lcj3App.swift */,

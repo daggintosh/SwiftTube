@@ -57,6 +57,7 @@ struct statRaw: Codable {
     let viewCount: String
     let id: String
     let description: String
+    let title: String
     
     enum ItemKeys: String, CodingKey {
         case id, statistics, snippet
@@ -67,7 +68,7 @@ struct statRaw: Codable {
     }
     
     enum SnippetKeys: String, CodingKey {
-        case description
+        case description, title
     }
     
     init(from decoder: Decoder) throws {
@@ -78,6 +79,7 @@ struct statRaw: Codable {
         self.viewCount = try statContainer.decode(String.self, forKey: .viewCount)
         self.id = try itemContainer.decode(String.self, forKey: .id)
         self.description = try snippetContainer.decode(String.self, forKey: .description)
+        self.title = try snippetContainer.decode(String.self, forKey: .title)
     }
 }
 
@@ -140,7 +142,7 @@ func searchYouTube(phrase: String) -> [ContentView.Video] {
     sem2.wait()
     
     for (index, item) in decoded!.items.enumerated() {
-        cvid.append(ContentView.Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: item.title.removingPercentEncoding!, description: viewDecoded?.items[index].description ?? "This video does not have a description (or I did something wrong)", views: viewDecoded?.items[index].viewCount ?? "301", author: item.channelTitle, id: item.id))
+        cvid.append(ContentView.Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: viewDecoded?.items[index].title ?? "No Title", description: viewDecoded?.items[index].description ?? "This video does not have a description (or I did something wrong)", views: viewDecoded?.items[index].viewCount ?? "301", author: item.channelTitle, id: item.id))
     }
     
     print("The API has been called")
