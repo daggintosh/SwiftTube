@@ -27,9 +27,8 @@ struct SearchView: View {
                     }
                 }.padding(.horizontal)
             }.cornerRadius(20).frame(height:40).padding()
-            NavigationLink {
-                ContentView(resultsTitle: searchText.trimmingCharacters(in: .whitespacesAndNewlines), displaySearch: false)
-            } label: {
+            NavigationLink(destination: ContentView(resultsTitle: searchText, displaySearch: false, searchTerm: searchText.trimmingCharacters(in: .whitespacesAndNewlines), doNotRequest: false))
+            {
                 Text("Go")
             }.disabled(disableGo)
             Spacer()
