@@ -17,30 +17,58 @@ struct ContentView: View {
         let id: String
     }
     
-    var resultsTitle: String = "Home"
+    var resultsTitle: String = ""
     var displaySearch: Bool = true
     var searchTerm: String = ""
     // Requests to the API should be made only when necessary
-    @State var doNotRequest: Bool = true
+    @State var doNotRequest: Bool = false
     
     @State var videoArr: [Video] = [
-        Video(thumbnail: "https://i3.ytimg.com/vi/9iNxhEn-9D4/maxresdefault.jpg", title: "Rick Astley - Never Gonna Give You Up (Official Music Video)", description: "9iNxhEn", views: "1240134028", author: "Rick Astley", id: "9iNxhEn-9D4"),
-        Video(thumbnail: "https://i3.ytimg.com/vi/Gc3tqnhmf5U/maxresdefault.jpg", title: "Oblivion (Placeholder)", description: "By theFatRat", views: "10000000", author: "TheFatRat", id: "Gc3tqnhmf5U"),
-        Video(thumbnail: "https://i3.ytimg.com/vi/-WpnPSChVRQ/maxresdefault.jpg", title: "[Full Song/Official Lyrics] Devil Trigger - Nero's battle theme from Devil May Cry 5", description: "Devil Trigger - Nero's Battle Theme from Devil May Cry 5 by Casey Edwards feat. Ali Edwards and Cliff Lloret", views: "56591174", author: "R H", id: "-WpnPSChVRQ"),
-        Video(thumbnail: "https://i3.ytimg.com/vi/RjLWGyx4zoA/hqdefault.jpg", title: "Persona 5-Battle Victory Theme(Extended)", description: "This was so d*mn catchy I couldn't help myself. I do not own the \"Persona\" series in any form or fashion. I do not own the pictures used in this video, nor do I own the original soundtrack played in this video. All rights reserved to Atlus.", views: "864098", author: "Hey Arnold", id: "RjLWGyx4zoA")
+        
     ]
     
     var body: some View {
         if(displaySearch == true) {
-            NavigationView {
-                restOfView.navigationTitle(resultsTitle).navigationBarTitleDisplayMode(.inline).listStyle(.plain).toolbar {
-                    NavigationLink {
-                        SearchView()
-                    } label: {
-                        if displaySearch {
-                            Image(systemName: "magnifyingglass")
+            TabView {
+                NavigationView {
+                    Text("Unimplemented").navigationTitle("Home").navigationBarTitleDisplayMode(.inline).listStyle(.plain).toolbar {
+                        NavigationLink {
+                            SearchView()
+                        } label: {
+                            if displaySearch {
+                                Image(systemName: "magnifyingglass")
+                            }
                         }
                     }
+                }.tabItem {
+                    Image(systemName: "house.fill")
+                    Text("Home").padding(.bottom)
+                }
+                NavigationView {
+                    restOfView.navigationTitle("Trending").navigationBarTitleDisplayMode(.inline).listStyle(.plain).toolbar {
+                        NavigationLink {
+                            SearchView()
+                        } label: {
+                            if displaySearch {
+                                Image(systemName: "magnifyingglass")
+                            }
+                        }
+                    }.onAppear() {
+                        if !doNotRequest {
+                            let ret = requestTrending()
+                            videoArr = ret
+                            doNotRequest = true
+                        }
+                    }
+                }.tabItem {
+                    Image(systemName: "star")
+                    Text("Trending")
+                }
+                NavigationView {
+                    Text("My Account").navigationTitle("Account")
+                }.tabItem {
+                    Image(systemName: "person.circle.fill")
+                    Text("Account")
                 }
             }
         }
@@ -68,7 +96,7 @@ struct ContentView: View {
                             AsyncImage(url: URL(string: subject.thumbnail)) { Image in
                                 Image.resizable()
                             } placeholder: {
-                                ProgressView()
+                                ProgressView().progressViewStyle(CircularProgressViewStyle(tint: Color(.systemGray)))
                             }.aspectRatio(16/9, contentMode: .fill)
                             
                         }
@@ -91,6 +119,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(doNotRequest: true)
     }
 }

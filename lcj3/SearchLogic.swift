@@ -4,7 +4,7 @@
 //
 //  Created by Dagg on 6/30/22.
 //
-// https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=Never%20gonna%20give%20you%20up&type=video&videoEmbeddable=true&videoSyndicated=true&key=[YOUR_API_KEY]
+//
 
 import Foundation
 
@@ -58,6 +58,7 @@ struct statRaw: Codable {
     let id: String
     let description: String
     let title: String
+    let channelTitle: String
     
     enum ItemKeys: String, CodingKey {
         case id, statistics, snippet
@@ -68,7 +69,7 @@ struct statRaw: Codable {
     }
     
     enum SnippetKeys: String, CodingKey {
-        case description, title
+        case description, title, channelTitle
     }
     
     init(from decoder: Decoder) throws {
@@ -80,6 +81,7 @@ struct statRaw: Codable {
         self.id = try itemContainer.decode(String.self, forKey: .id)
         self.description = try snippetContainer.decode(String.self, forKey: .description)
         self.title = try snippetContainer.decode(String.self, forKey: .title)
+        self.channelTitle = try snippetContainer.decode(String.self, forKey: .channelTitle)
     }
 }
 
@@ -95,11 +97,15 @@ struct apiKey: Decodable {
     let apiKey: String
 }
 
-func searchYouTube(phrase: String) -> [ContentView.Video] {
+func getAPIKey() -> String {
     let keyURL = Bundle.main.url(forResource: "APIKey", withExtension: "plist")!
     let data = try! Data(contentsOf: keyURL)
     let result = try! PropertyListDecoder().decode(apiKey.self, from: data)
-    let apiKey = result.apiKey
+    return result.apiKey
+}
+
+func searchYouTube(phrase: String) -> [ContentView.Video] {
+    let apiKey = getAPIKey()
     
     var cvid: [ContentView.Video] = [
         
@@ -109,7 +115,7 @@ func searchYouTube(phrase: String) -> [ContentView.Video] {
     
     var decoded: items?
     
-    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=\(encodedPhrase)&type=video&videoEmbeddable=true&videoSyndicated=true&key=\(apiKey)")!
+    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=\(encodedPhrase)&type=video&key=\(apiKey)")!
 
     let sem = DispatchSemaphore.init(value: 0)
     let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
@@ -135,7 +141,6 @@ func searchYouTube(phrase: String) -> [ContentView.Video] {
         guard let newdata = newdata else { return }
         
         viewDecoded = try! JSONDecoder().decode(stats.self, from: newdata)
-        print(newdata)
     }
     
     viewTask.resume()
@@ -149,6 +154,28 @@ func searchYouTube(phrase: String) -> [ContentView.Video] {
     return cvid
 }
 
-func requestViewCount() {
+func requestTrending() -> [ContentView.Video] {
+    var tVid: [ContentView.Video] = [
+    ]
+    let apiKey = getAPIKey()
     
+    var decoded: stats?
+
+    let viewURL = URL(string: "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2Cstatistics&chart=mostPopular&maxResults=10&key=\(apiKey)")!
+    let sem = DispatchSemaphore.init(value: 0)
+    let viewTask = URLSession.shared.dataTask(with: viewURL) { (data, resp, err) in
+        defer {sem.signal()}
+        guard let data = data else { return }
+        
+        decoded = try! JSONDecoder().decode(stats.self, from: data)
+    }
+    
+    viewTask.resume()
+    sem.wait()
+    
+    decoded?.items.forEach({ snip in
+        tVid.append(ContentView.Video(thumbnail: "https://i.ytimg.com/vi/\(snip.id)/hq720.jpg", title: snip.title, description: snip.description, views: snip.viewCount, author: snip.channelTitle, id: snip.id))
+    })
+    
+    return tVid
 }

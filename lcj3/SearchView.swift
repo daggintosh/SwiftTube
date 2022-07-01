@@ -10,6 +10,7 @@ import SwiftUI
 struct SearchView: View {
     @State var searchText: String = ""
     @State var disableGo: Bool = true
+    @State var readyToNav: Bool = false
     
     var body: some View {
         VStack() {
@@ -24,10 +25,12 @@ struct SearchView: View {
                         else {
                             disableGo = true
                         }
+                    }.keyboardType(.webSearch).onSubmit {
+                        readyToNav = true
                     }
                 }.padding(.horizontal)
             }.cornerRadius(20).frame(height:40).padding()
-            NavigationLink(destination: ContentView(resultsTitle: searchText, displaySearch: false, searchTerm: searchText.trimmingCharacters(in: .whitespacesAndNewlines), doNotRequest: false))
+            NavigationLink(destination: ContentView(resultsTitle: searchText, displaySearch: false, searchTerm: searchText.trimmingCharacters(in: .whitespacesAndNewlines), doNotRequest: false), isActive: $readyToNav)
             {
                 Text("Go")
             }.disabled(disableGo)
@@ -38,6 +41,6 @@ struct SearchView: View {
 
 struct SearchView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        SearchView()
     }
 }
