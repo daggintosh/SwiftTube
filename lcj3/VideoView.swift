@@ -14,6 +14,7 @@ struct VideoView: View {
     var description: String = "No description"
     var views: String = "301"
     var videoId: String = "9iNxhEn-9D4"
+    var publishedAt: Date = Date()
     
     var body: some View {
         VStack() {
@@ -22,7 +23,10 @@ struct VideoView: View {
                 VStack(alignment: .leading) {
                     Text(title)
                     Text(author).font(.footnote)
-                    Text("\(views) views").font(.caption)
+                    HStack() {
+                        Text("\(publishedAt.formatted(date: .abbreviated, time: .omitted))").font(.caption)
+                        Text("\(views) views").font(.caption)
+                    }
                 }
                 Spacer()
             }.padding(.horizontal)

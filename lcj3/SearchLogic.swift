@@ -59,6 +59,7 @@ struct statRaw: Codable {
     let description: String
     let title: String
     let channelTitle: String
+    let publishedAt: Date
     
     enum ItemKeys: String, CodingKey {
         case id, statistics, snippet
@@ -69,7 +70,7 @@ struct statRaw: Codable {
     }
     
     enum SnippetKeys: String, CodingKey {
-        case description, title, channelTitle
+        case description, title, channelTitle, publishedAt
     }
     
     init(from decoder: Decoder) throws {
@@ -82,6 +83,7 @@ struct statRaw: Codable {
         self.description = try snippetContainer.decode(String.self, forKey: .description)
         self.title = try snippetContainer.decode(String.self, forKey: .title)
         self.channelTitle = try snippetContainer.decode(String.self, forKey: .channelTitle)
+        self.publishedAt = try snippetContainer.decode(Date.self, forKey: .publishedAt)
     }
 }
 
@@ -140,14 +142,17 @@ func searchYouTube(phrase: String) -> [ContentView.Video] {
         defer {sem2.signal()}
         guard let newdata = newdata else { return }
         
-        viewDecoded = try! JSONDecoder().decode(stats.self, from: newdata)
+        let stdecoder = JSONDecoder()
+        stdecoder.dateDecodingStrategy = .iso8601
+        
+        viewDecoded = try! stdecoder.decode(stats.self, from: newdata)
     }
     
     viewTask.resume()
     sem2.wait()
     
     for (index, item) in decoded!.items.enumerated() {
-        cvid.append(ContentView.Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: viewDecoded?.items[index].title ?? "No Title", description: viewDecoded?.items[index].description ?? "This video does not have a description (or I did something wrong)", views: viewDecoded?.items[index].viewCount ?? "301", author: item.channelTitle, id: item.id))
+        cvid.append(ContentView.Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: viewDecoded?.items[index].title ?? "No Title", description: viewDecoded?.items[index].description ?? "This video does not have a description (or I did something wrong)", views: viewDecoded?.items[index].viewCount ?? "301", author: item.channelTitle, id: item.id, publishDate: viewDecoded!.items[index].publishedAt))
     }
     
     print("The API has been called")
@@ -167,14 +172,17 @@ func requestTrending() -> [ContentView.Video] {
         defer {sem.signal()}
         guard let data = data else { return }
         
-        decoded = try! JSONDecoder().decode(stats.self, from: data)
+        let stdecoder = JSONDecoder()
+        stdecoder.dateDecodingStrategy = .iso8601
+        
+        decoded = try! stdecoder.decode(stats.self, from: data)
     }
     
     viewTask.resume()
     sem.wait()
     
     decoded?.items.forEach({ snip in
-        tVid.append(ContentView.Video(thumbnail: "https://i.ytimg.com/vi/\(snip.id)/hq720.jpg", title: snip.title, description: snip.description, views: snip.viewCount, author: snip.channelTitle, id: snip.id))
+        tVid.append(ContentView.Video(thumbnail: "https://i.ytimg.com/vi/\(snip.id)/hq720.jpg", title: snip.title, description: snip.description, views: snip.viewCount, author: snip.channelTitle, id: snip.id, publishDate: snip.publishedAt))
     })
     
     return tVid

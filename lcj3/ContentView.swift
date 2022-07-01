@@ -15,6 +15,7 @@ struct ContentView: View {
         let views: String
         let author: String
         let id: String
+        let publishDate: Date
     }
     
     var resultsTitle: String = ""
@@ -87,7 +88,7 @@ struct ContentView: View {
         List {
             ForEach(videoArr) { subject in
                 ZStack {
-                    NavigationLink(destination: VideoView(title: subject.title, author: subject.author, description: subject.description, views: subject.views.FormatCool,videoId: subject.id)) {
+                    NavigationLink(destination: VideoView(title: subject.title, author: subject.author, description: subject.description, views: subject.views.FormatCool,videoId: subject.id,publishedAt: subject.publishDate)) {
                         
                     }
                     VStack() {
