@@ -28,7 +28,7 @@ extension String {
             return oginput
         }
         else {
-            return "NaN"
+            return "Hidden"
         }
     }
     var FormatCool: String {
@@ -43,7 +43,7 @@ extension String {
         }
         else
         {
-            return "NaN"
+            return "Hidden"
         }
         
     }

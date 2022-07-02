@@ -4,71 +4,47 @@
 //
 //  Created by Dagg on 6/30/22.
 //
-// https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=Never%20gonna%20give%20you%20up&type=video&videoEmbeddable=true&videoSyndicated=true&key=[YOUR_API_KEY]
+//
 
 import Foundation
 
-struct resultItems: Codable {
+struct searchId: Decodable {
     let id: String
-    let title: String
-    let description: String
-    let channelTitle: String
-    let thumbnail: String
     
     enum ItemKeys: String, CodingKey {
-        case id, snippet
-    }
-    
-    enum SnippetKeys: String, CodingKey {
-        case title, description, channelTitle, thumbnails
+        case id
     }
     
     enum IdKeys: String, CodingKey {
         case videoId
     }
     
-    enum ThumnailKeys: String, CodingKey {
-        case high
-    }
-    
-    enum HighKeys: String, CodingKey {
-        case url
-    }
-    
     init(from decoder: Decoder) throws {
-        //let outerContainer = try decoder.container(keyedBy: OuterKeys.self)
-        
         let itemContainer = try decoder.container(keyedBy: ItemKeys.self)
-        
-        let snippetContainer = try itemContainer.nestedContainer(keyedBy: SnippetKeys.self, forKey: .snippet)
         let idContainer = try itemContainer.nestedContainer(keyedBy: IdKeys.self, forKey: .id)
-        let thumbnailContainer = try snippetContainer.nestedContainer(keyedBy: ThumnailKeys.self, forKey: .thumbnails)
-        let highContainer = try thumbnailContainer.nestedContainer(keyedBy: HighKeys.self, forKey: .high)
-        
         self.id = try idContainer.decode(String.self, forKey: .videoId)
-        self.title = try snippetContainer.decode(String.self, forKey: .title)
-        self.description = try snippetContainer.decode(String.self, forKey: .description)
-        self.channelTitle = try snippetContainer.decode(String.self, forKey: .channelTitle)
-        self.thumbnail = try highContainer.decode(String.self, forKey: .url)
     }
 }
 
-struct statRaw: Codable {
+struct videoDetails: Decodable {
     let viewCount: String
     let id: String
     let description: String
     let title: String
+    let channelTitle: String
+    let publishedAt: Date
+    let likeCount: String
     
     enum ItemKeys: String, CodingKey {
         case id, statistics, snippet
     }
     
     enum StatisticsKeys: String, CodingKey {
-        case viewCount
+        case viewCount, likeCount
     }
     
     enum SnippetKeys: String, CodingKey {
-        case description, title
+        case description, title, channelTitle, publishedAt
     }
     
     init(from decoder: Decoder) throws {
@@ -76,32 +52,39 @@ struct statRaw: Codable {
         
         let statContainer = try itemContainer.nestedContainer(keyedBy: StatisticsKeys.self, forKey: .statistics)
         let snippetContainer = try itemContainer.nestedContainer(keyedBy: SnippetKeys.self, forKey: .snippet)
-        self.viewCount = try statContainer.decode(String.self, forKey: .viewCount)
+        self.viewCount = try statContainer.decodeIfPresent(String.self, forKey: .viewCount) ?? ""
         self.id = try itemContainer.decode(String.self, forKey: .id)
         self.description = try snippetContainer.decode(String.self, forKey: .description)
         self.title = try snippetContainer.decode(String.self, forKey: .title)
+        self.channelTitle = try snippetContainer.decode(String.self, forKey: .channelTitle)
+        self.publishedAt = try snippetContainer.decode(Date.self, forKey: .publishedAt)
+        self.likeCount = try statContainer.decodeIfPresent(String.self, forKey: .likeCount) ?? ""
     }
 }
 
-struct stats: Codable {
-    let items: [statRaw]
+struct details: Decodable {
+    let items: [videoDetails]
 }
 
-struct items: Codable {
-    let items: [resultItems]
+struct items: Decodable {
+    let items: [searchId]
 }
 
 struct apiKey: Decodable {
     let apiKey: String
 }
 
-func searchYouTube(phrase: String) -> [ContentView.Video] {
+func getAPIKey() -> String {
     let keyURL = Bundle.main.url(forResource: "APIKey", withExtension: "plist")!
     let data = try! Data(contentsOf: keyURL)
     let result = try! PropertyListDecoder().decode(apiKey.self, from: data)
-    let apiKey = result.apiKey
+    return result.apiKey
+}
+
+func searchYouTube(phrase: String) -> [Video] {
+    let apiKey = getAPIKey()
     
-    var cvid: [ContentView.Video] = [
+    var cvid: [Video] = [
         
     ]
     
@@ -109,46 +92,80 @@ func searchYouTube(phrase: String) -> [ContentView.Video] {
     
     var decoded: items?
     
-    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=\(encodedPhrase)&type=video&videoEmbeddable=true&videoSyndicated=true&key=\(apiKey)")!
+    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=id&maxResults=10&q=\(encodedPhrase)&type=video&key=\(apiKey)")!
 
     let sem = DispatchSemaphore.init(value: 0)
     let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
         defer { sem.signal() }
         guard let data = data else { return }
         
-        decoded = try! JSONDecoder().decode(items.self, from: data)
+        decoded = try? JSONDecoder().decode(items.self, from: data)
     }
     
     
     task.resume()
     sem.wait()
     
-    var viewDecoded: stats?
+    var detailsDecoded: details?
+    
     var ids: String = ""
     decoded?.items.forEach({ item in
         ids.append("\(item.id),")
     })
+    
     let viewURL = URL(string: "https://youtube.googleapis.com/youtube/v3/videos?part=statistics,snippet&id=\(ids)&key=\(apiKey)")!
+    
     let sem2 = DispatchSemaphore.init(value: 0)
+    
     let viewTask = URLSession.shared.dataTask(with: viewURL) { (newdata, newresponse, newerror) in
         defer {sem2.signal()}
         guard let newdata = newdata else { return }
         
-        viewDecoded = try! JSONDecoder().decode(stats.self, from: newdata)
-        print(newdata)
+        let stdecoder = JSONDecoder()
+        stdecoder.dateDecodingStrategy = .iso8601
+        
+        detailsDecoded = try! stdecoder.decode(details.self, from: newdata)
     }
     
     viewTask.resume()
     sem2.wait()
     
-    for (index, item) in decoded!.items.enumerated() {
-        cvid.append(ContentView.Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: viewDecoded?.items[index].title ?? "No Title", description: viewDecoded?.items[index].description ?? "This video does not have a description (or I did something wrong)", views: viewDecoded?.items[index].viewCount ?? "301", author: item.channelTitle, id: item.id))
-    }
+    detailsDecoded?.items.forEach({ item in
+        cvid.append(Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: item.title, description: item.description, views: item.viewCount, author: item.channelTitle, id: item.id, publishDate: item.publishedAt, likes: item.likeCount))
+    })
     
     print("The API has been called")
     return cvid
 }
 
-func requestViewCount() {
+func requestTrending() -> [Video] {
+    var tVid: [Video] = [
+        
+    ]
+    let apiKey = getAPIKey()
     
+    var decoded: details?
+
+    let viewURL = URL(string: "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2Cstatistics&chart=mostPopular&maxResults=10&key=\(apiKey)")!
+    
+    let sem = DispatchSemaphore.init(value: 0)
+    
+    let viewTask = URLSession.shared.dataTask(with: viewURL) { (data, resp, err) in
+        defer {sem.signal()}
+        guard let data = data else { return }
+        
+        let stdecoder = JSONDecoder()
+        stdecoder.dateDecodingStrategy = .iso8601
+        
+        decoded = try? stdecoder.decode(details.self, from: data)
+    }
+    
+    viewTask.resume()
+    sem.wait()
+    
+    decoded?.items.forEach({ snip in
+        tVid.append(Video(thumbnail: "https://i.ytimg.com/vi/\(snip.id)/hq720.jpg", title: snip.title, description: snip.description, views: snip.viewCount, author: snip.channelTitle, id: snip.id, publishDate: snip.publishedAt, likes: snip.likeCount))
+    })
+    
+    return tVid
 }
