@@ -8,23 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
-    struct Video: Identifiable {
-        let thumbnail: String
-        let title: String
-        let description: String
-        let views: String
-        let author: String
-        let id: String
-        let publishDate: Date
-    }
-    
     var resultsTitle: String = ""
     var displaySearch: Bool = true
     var searchTerm: String = ""
     // Requests to the API should be made only when necessary
     @State var doNotRequest: Bool = false
     
-    @State var videoArr: [Video] = [
+    @State private var videoArr: [Video] = [
         
     ]
     
@@ -32,29 +22,7 @@ struct ContentView: View {
         if(displaySearch == true) {
             TabView {
                 NavigationView {
-                    Text("Unimplemented").navigationTitle("Home").navigationBarTitleDisplayMode(.inline).listStyle(.plain).toolbar {
-                        NavigationLink {
-                            SearchView()
-                        } label: {
-                            if displaySearch {
-                                Image(systemName: "magnifyingglass")
-                            }
-                        }
-                    }
-                }.tabItem {
-                    Image(systemName: "house.fill")
-                    Text("Home").padding(.bottom)
-                }
-                NavigationView {
-                    restOfView.navigationTitle("Trending").navigationBarTitleDisplayMode(.inline).listStyle(.plain).toolbar {
-                        NavigationLink {
-                            SearchView()
-                        } label: {
-                            if displaySearch {
-                                Image(systemName: "magnifyingglass")
-                            }
-                        }
-                    }.onAppear() {
+                    restOfView.navigationTitle("Trending").navigationBarTitleDisplayMode(.inline).listStyle(.plain).onAppear() {
                         if !doNotRequest {
                             let ret = requestTrending()
                             videoArr = ret
@@ -66,10 +34,10 @@ struct ContentView: View {
                     Text("Trending")
                 }
                 NavigationView {
-                    Text("My Account").navigationTitle("Account")
+                    SearchView()
                 }.tabItem {
-                    Image(systemName: "person.circle.fill")
-                    Text("Account")
+                    Image(systemName: "magnifyingglass")
+                    Text("Search")
                 }
             }
         }
@@ -88,7 +56,7 @@ struct ContentView: View {
         List {
             ForEach(videoArr) { subject in
                 ZStack {
-                    NavigationLink(destination: VideoView(title: subject.title, author: subject.author, description: subject.description, views: subject.views.FormatCool,videoId: subject.id,publishedAt: subject.publishDate)) {
+                    NavigationLink(destination: VideoView(video:subject)) {
                         
                     }
                     VStack() {

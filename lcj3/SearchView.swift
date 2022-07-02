@@ -9,8 +9,9 @@ import SwiftUI
 
 struct SearchView: View {
     @State var searchText: String = ""
-    @State var disableGo: Bool = true
-    @State var readyToNav: Bool = false
+    @State private var readyToNav: Bool = false
+    @FocusState private var searchFocus: Bool
+    @State private var clearVisible: Bool = false
     
     var body: some View {
         VStack() {
@@ -18,22 +19,33 @@ struct SearchView: View {
                 Rectangle().foregroundColor(Color(UIColor.systemGray5))
                 HStack() {
                     Image(systemName: "magnifyingglass")
-                    TextField("Search ...", text: $searchText).onChange(of: searchText) { newValue in
-                        if (newValue.trimmingCharacters(in: .whitespacesAndNewlines) != "") {
-                            disableGo = false
+                    TextField("Search ...", text: $searchText).keyboardType(.webSearch).onSubmit {
+                        if (searchText.trimmingCharacters(in: .whitespacesAndNewlines) != "") {
+                            readyToNav = true
                         }
-                        else {
-                            disableGo = true
+                    }.focused($searchFocus).onAppear {
+                        searchFocus = true
+                    }.onChange(of: searchText) { newValue in
+                        withAnimation {
+                            if(newValue != "") {
+                                clearVisible = true
+                            }
+                            else {
+                                clearVisible = false
+                            }
                         }
-                    }.keyboardType(.webSearch).onSubmit {
-                        readyToNav = true
+                    }
+                    Spacer()
+                    if(clearVisible) {
+                        Button {
+                            searchText = ""
+                        } label: {
+                            Image(systemName: "xmark").foregroundColor(Color(.systemGray))
+                        }
                     }
                 }.padding(.horizontal)
             }.cornerRadius(20).frame(height:40).padding()
-            NavigationLink(destination: ContentView(resultsTitle: searchText, displaySearch: false, searchTerm: searchText.trimmingCharacters(in: .whitespacesAndNewlines), doNotRequest: false), isActive: $readyToNav)
-            {
-                Text("Go")
-            }.disabled(disableGo)
+            NavigationLink(destination: ContentView(resultsTitle: searchText, displaySearch: false, searchTerm: searchText.trimmingCharacters(in: .whitespacesAndNewlines), doNotRequest: false), isActive: $readyToNav) {}
             Spacer()
         }.navigationTitle("Search YouTube")
     }
