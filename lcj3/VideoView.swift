@@ -14,25 +14,25 @@ struct VideoView: View {
     var body: some View {
         VStack() {
             WebView(target: video.id).aspectRatio(16/9, contentMode: .fit)
-            HStack() {
-                VStack(alignment: .leading) {
-                    Text(video.title)
-                    Text(video.author).font(.footnote)
-                    HStack() {
-                        Text("\(video.publishDate.formatted(date: .abbreviated, time: .omitted))").font(.caption)
-                        Text("\(video.views.FormatCool) views").font(.caption)
-                        Spacer()
-                        Text("\(video.likes.FormatCool) likes").font(.caption)
-                    }
-                }
-                Spacer()
-            }.padding(.horizontal)
-            Divider().padding(.horizontal)
             ScrollView() {
+                HStack() {
+                    VStack(alignment: .leading) {
+                        Text(video.title)
+                        Text(video.author).font(.footnote)
+                        HStack() {
+                            Text("\(video.publishDate.formatted(date: .abbreviated, time: .omitted))").font(.caption)
+                        }
+                        HStack() {
+                            Text("\(video.views.FormatCool) views").font(.caption)
+                            Spacer()
+                            Text("\(video.likes.FormatCool) likes").font(.caption)
+                        }
+                    }
+                    Spacer()
+                }
+                Divider()
                 Text(video.description)
             }.padding(.horizontal)
-            Divider().padding(.horizontal)
-            Spacer()
         }.toolbar {
             NavigationLink("Related") {
                 
