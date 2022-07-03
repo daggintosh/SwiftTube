@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1813AECD28714061006F5F32 /* CommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1813AECC28714061006F5F32 /* CommentView.swift */; };
+		1813AECF28714072006F5F32 /* AuthorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1813AECE28714072006F5F32 /* AuthorView.swift */; };
 		1827C52E286B6D9D000FDED1 /* lcj3App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1827C52D286B6D9D000FDED1 /* lcj3App.swift */; };
 		1827C530286B6D9D000FDED1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1827C52F286B6D9D000FDED1 /* ContentView.swift */; };
 		1827C532286B6D9E000FDED1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1827C531286B6D9E000FDED1 /* Assets.xcassets */; };
@@ -21,6 +23,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1813AECC28714061006F5F32 /* CommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentView.swift; sourceTree = "<group>"; };
+		1813AECE28714072006F5F32 /* AuthorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorView.swift; sourceTree = "<group>"; };
 		1827C52A286B6D9D000FDED1 /* lcj3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = lcj3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1827C52D286B6D9D000FDED1 /* lcj3App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = lcj3App.swift; sourceTree = "<group>"; };
 		1827C52F286B6D9D000FDED1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -76,6 +80,8 @@
 				189650ED2870F63F00155BB8 /* VideoStructure.swift */,
 				183E7E6A286D06560083BDD8 /* WebView.swift */,
 				1849C671286BA41500887468 /* Abbreviate.swift */,
+				1813AECC28714061006F5F32 /* CommentView.swift */,
+				1813AECE28714072006F5F32 /* AuthorView.swift */,
 				1827C531286B6D9E000FDED1 /* Assets.xcassets */,
 				1827C533286B6D9E000FDED1 /* Preview Content */,
 			);
@@ -161,10 +167,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1813AECD28714061006F5F32 /* CommentView.swift in Sources */,
 				18A59A58286DF640007928C3 /* SearchLogic.swift in Sources */,
 				183E7E69286D04590083BDD8 /* VideoView.swift in Sources */,
 				183E7E6B286D06560083BDD8 /* WebView.swift in Sources */,
 				1827C530286B6D9D000FDED1 /* ContentView.swift in Sources */,
+				1813AECF28714072006F5F32 /* AuthorView.swift in Sources */,
 				1849C672286BA41500887468 /* Abbreviate.swift in Sources */,
 				18A59A56286DEC07007928C3 /* SearchView.swift in Sources */,
 				1827C52E286B6D9D000FDED1 /* lcj3App.swift in Sources */,

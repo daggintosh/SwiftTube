@@ -20,7 +20,7 @@ struct SearchView: View {
             }.foregroundColor(Color(.systemBackground))
             VStack() {
                 ZStack() {
-                    Rectangle().foregroundColor(Color(UIColor.systemGray5))
+                    Rectangle().foregroundColor(Color(.systemGray5))
                     HStack() {
                         Image(systemName: "magnifyingglass")
                         TextField("Search ...", text: $searchText).keyboardType(.webSearch).onSubmit {
@@ -42,6 +42,7 @@ struct SearchView: View {
                         if(clearVisible) {
                             Button {
                                 searchText = ""
+                                searchFocus = true
                             } label: {
                                 Image(systemName: "xmark").foregroundColor(Color(.systemGray))
                             }

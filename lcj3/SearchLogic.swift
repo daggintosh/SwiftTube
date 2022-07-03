@@ -34,6 +34,7 @@ struct videoDetails: Decodable {
     let channelTitle: String
     let publishedAt: Date
     let likeCount: String
+    let channelId: String
     
     enum ItemKeys: String, CodingKey {
         case id, statistics, snippet
@@ -44,7 +45,7 @@ struct videoDetails: Decodable {
     }
     
     enum SnippetKeys: String, CodingKey {
-        case description, title, channelTitle, publishedAt
+        case description, title, channelTitle, publishedAt, channelId
     }
     
     init(from decoder: Decoder) throws {
@@ -59,6 +60,55 @@ struct videoDetails: Decodable {
         self.channelTitle = try snippetContainer.decode(String.self, forKey: .channelTitle)
         self.publishedAt = try snippetContainer.decode(Date.self, forKey: .publishedAt)
         self.likeCount = try statContainer.decodeIfPresent(String.self, forKey: .likeCount) ?? ""
+        self.channelId = try snippetContainer.decode(String.self, forKey: .channelId)
+    }
+}
+
+struct channelDetails: Decodable {
+    let id: String
+    let title: String
+    let profilePicture: String
+    let profileBanner: String
+    
+    enum ItemKeys: String, CodingKey {
+        case snippet, brandingSettings, id
+    }
+    
+    enum SnippetKeys: String, CodingKey {
+        case thumbnails
+    }
+    
+    enum BrandingKeys: String, CodingKey {
+        case channel, image
+    }
+    
+    enum PFPKeys: String, CodingKey {
+        case high
+    }
+    enum HPFKeys: String, CodingKey {
+        case url
+    }
+    
+    enum ChannelKeys: String, CodingKey {
+        case title, description
+    }
+    
+    enum BannerKeys: String, CodingKey {
+        case bannerExternalUrl
+    }
+    
+    init(from decoder: Decoder) throws {
+        let items = try decoder.container(keyedBy: ItemKeys.self)
+        let snippet = try items.nestedContainer(keyedBy: SnippetKeys.self, forKey: .snippet)
+        let branding = try items.nestedContainer(keyedBy: BrandingKeys.self, forKey: .brandingSettings)
+        let pfp = try snippet.nestedContainer(keyedBy: PFPKeys.self, forKey: .thumbnails)
+        let high = try pfp.nestedContainer(keyedBy: HPFKeys.self, forKey: .high)
+        let banner = try branding.nestedContainer(keyedBy: BannerKeys.self, forKey: .image)
+        let details = try branding.nestedContainer(keyedBy: ChannelKeys.self, forKey: .channel)
+        self.profilePicture = try high.decode(String.self, forKey: .url)
+        self.profileBanner = try banner.decode(String.self, forKey: .bannerExternalUrl)
+        self.title = try details.decode(String.self, forKey: .title)
+        self.id = try items.decode(String.self, forKey: .id)
     }
 }
 
@@ -68,6 +118,10 @@ struct details: Decodable {
 
 struct items: Decodable {
     let items: [searchId]
+}
+
+struct channels: Decodable {
+    let items: [channelDetails]
 }
 
 struct apiKey: Decodable {
@@ -106,10 +160,21 @@ func searchYouTube(phrase: String) -> [Video] {
     task.resume()
     sem.wait()
     
+    getDetails(items: decoded!).items.forEach({ item in
+        cvid.append(Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: item.title, description: item.description, views: item.viewCount, author: item.channelTitle, id: item.id, publishDate: item.publishedAt, likes: item.likeCount, channelId: item.channelId))
+    })
+    
+    print("The API has been called")
+    return cvid
+}
+
+func getDetails(items: items) -> details {
+    let apiKey = getAPIKey()
+    
     var detailsDecoded: details?
     
     var ids: String = ""
-    decoded?.items.forEach({ item in
+    items.items.forEach({ item in
         ids.append("\(item.id),")
     })
     
@@ -130,12 +195,7 @@ func searchYouTube(phrase: String) -> [Video] {
     viewTask.resume()
     sem2.wait()
     
-    detailsDecoded?.items.forEach({ item in
-        cvid.append(Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: item.title, description: item.description, views: item.viewCount, author: item.channelTitle, id: item.id, publishDate: item.publishedAt, likes: item.likeCount))
-    })
-    
-    print("The API has been called")
-    return cvid
+    return detailsDecoded!
 }
 
 func requestTrending() -> [Video] {
@@ -164,8 +224,63 @@ func requestTrending() -> [Video] {
     sem.wait()
     
     decoded?.items.forEach({ snip in
-        tVid.append(Video(thumbnail: "https://i.ytimg.com/vi/\(snip.id)/hq720.jpg", title: snip.title, description: snip.description, views: snip.viewCount, author: snip.channelTitle, id: snip.id, publishDate: snip.publishedAt, likes: snip.likeCount))
+        tVid.append(Video(thumbnail: "https://i.ytimg.com/vi/\(snip.id)/hq720.jpg", title: snip.title, description: snip.description, views: snip.viewCount, author: snip.channelTitle, id: snip.id, publishDate: snip.publishedAt, likes: snip.likeCount, channelId: snip.channelId))
     })
     
+    print("The API has been called")
     return tVid
+}
+
+func requestRelated(videoId: String) -> [Video] {
+    var rVid: [Video] = [
+    
+    ]
+    let apiKey = getAPIKey()
+    
+    var decoded: items?
+    
+    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=id&maxResults=10&relatedToVideoId=\(videoId)&type=video&key=\(apiKey)")!
+
+    let sem = DispatchSemaphore.init(value: 0)
+    let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
+        defer { sem.signal() }
+        guard let data = data else { return }
+        
+        decoded = try? JSONDecoder().decode(items.self, from: data)
+    }
+    
+    task.resume()
+    sem.wait()
+    
+    getDetails(items: decoded!).items.forEach({ item in
+        rVid.append(Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: item.title, description: item.description, views: item.viewCount, author: item.channelTitle, id: item.id, publishDate: item.publishedAt, likes: item.likeCount, channelId: item.channelId))
+    })
+    return rVid
+}
+
+func requestChannelStats(channelId: String) -> Author {
+    let apiKey = getAPIKey()
+    
+    var decoded: channels?
+    
+    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2C%20brandingSettings&id=\(channelId)&key=\(apiKey)")!
+    
+    let sem = DispatchSemaphore.init(value: 0)
+    let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
+        defer { sem.signal() }
+        guard let data = data else { return }
+        
+        decoded = try? JSONDecoder().decode(channels.self, from: data)
+    }
+    
+    task.resume()
+    sem.wait()
+    
+    var author: Author?
+    
+    decoded?.items.forEach({ details in
+        author = Author(id: details.id, banner: details.profileBanner, pfp: details.profilePicture, title: details.title)
+    })
+    
+    return author ?? Author(id: "", banner: "", pfp: "", title: "")
 }

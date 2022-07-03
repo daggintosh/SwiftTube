@@ -11,6 +11,7 @@ struct ContentView: View {
     var resultsTitle: String = ""
     var displaySearch: Bool = true
     var searchTerm: String = ""
+    var searchRelated: Bool = false
     // Requests to the API should be made only when necessary
     @State var doNotRequest: Bool = false
     
@@ -44,7 +45,13 @@ struct ContentView: View {
         else {
             restOfView.navigationTitle(resultsTitle).navigationBarTitleDisplayMode(.inline).listStyle(.plain).onAppear {
                 if !doNotRequest {
-                    let ret = searchYouTube(phrase: searchTerm)
+                    var ret: [Video]
+                    if(!searchRelated) {
+                        ret = searchYouTube(phrase: searchTerm)
+                    }
+                    else {
+                        ret = requestRelated(videoId: searchTerm)
+                    }
                     videoArr = ret
                     doNotRequest = true
                 }

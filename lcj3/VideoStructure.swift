@@ -16,4 +16,13 @@ struct Video: Identifiable {
     let id: String
     let publishDate: Date
     let likes: String
+    let channelId: String
+}
+
+struct Author: Identifiable {
+    let id: String
+    
+    let banner: String
+    let pfp: String
+    let title: String
 }
