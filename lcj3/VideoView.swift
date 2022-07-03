@@ -9,7 +9,7 @@ import SwiftUI
 
 struct VideoView: View {
     
-    var video: Video = Video(thumbnail: "", title: "None", description: "None", views: "", author: "None", id: "9iNxhEn-9D4", publishDate: Date(), likes: "", channelId: "")
+    var video: Video = Video(thumbnail: "", title: "", description: "", views: "", author: "", id: "", publishDate: Date(), likes: "", channelId: "")
     
     var body: some View {
         VStack() {

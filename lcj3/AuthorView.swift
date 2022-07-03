@@ -10,7 +10,7 @@ import SwiftUI
 struct AuthorView: View {
     var cid: String = ""
     @State var doNotRequest: Bool = false
-    @State private var channel: Author = Author(id: "", banner: "https://yt3.ggpht.com/GMwSJkuPHgb21JRY1q5MYZzbszlv5X1aYexjt7r1AhzFl5_qqTejgVlVnbUf8KDsbYsNWSQj", pfp: "", title: "")
+    @State private var channel: Author = Author(id: "", banner: "", pfp: "", title: "")
     
     var body: some View {
         VStack {
