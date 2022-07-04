@@ -26,3 +26,14 @@ struct Author: Identifiable {
     let pfp: String
     let title: String
 }
+
+struct Comment: Identifiable {
+    let id: String
+    
+    let pfp: String
+    let author: String
+    let comment: String
+    let publishDate: Date
+    let replyCount: Int
+    let replies: repliesArr?
+}

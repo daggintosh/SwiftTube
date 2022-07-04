@@ -17,7 +17,7 @@ struct WebView: UIViewRepresentable {
         webConfig.allowsInlineMediaPlayback = true
         webConfig.allowsPictureInPictureMediaPlayback = true
         let webView = WKWebView(frame: .zero, configuration: webConfig)
-        var urlRequest = URLRequest(url: URL(string: "https://youtube.com/embed/\(target)?playsinline=1")!)
+        var urlRequest = URLRequest(url: URL(string: "https://youtube.com/embed/\(target)?playsinline=1&color=white")!)
         urlRequest.addValue("https://www.youtube.com/", forHTTPHeaderField: "Referer")
         webView.load(urlRequest)
         return webView

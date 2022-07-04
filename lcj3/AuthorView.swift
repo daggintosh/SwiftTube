@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AuthorView: View {
     var cid: String = ""
+    @State var videos: [Video] = []
     @State var doNotRequest: Bool = false
     @State private var channel: Author = Author(id: "", banner: "", pfp: "", title: "")
     
@@ -40,18 +41,41 @@ struct AuthorView: View {
             }.aspectRatio(3,contentMode: .fit).navigationTitle(channel.title).onAppear {
                 if(!doNotRequest) {
                     channel = requestChannelStats(channelId: cid)
+                    videos = requestChannelVideos(channelId: cid)
+                    doNotRequest = true
                 }
             }
-            VStack {
-                HStack {
-                    Text("Uploads").font(.title)
-                    Spacer()
-                }
-                List {
-                    
-                }
-            }.padding(.horizontal)
+            List {
+                ForEach(videos) { subject in
+                    ZStack {
+                        NavigationLink(destination: VideoView(video:subject, isFromChannel: true)) {
+                            
+                        }
+                        VStack() {
+                            ZStack {
+                                Rectangle().foregroundColor(.black).aspectRatio(16/9, contentMode: .fill)
+                                AsyncImage(url: URL(string: subject.thumbnail)) { Image in
+                                    Image.resizable()
+                                } placeholder: {
+                                    ProgressView().progressViewStyle(CircularProgressViewStyle(tint: Color(.systemGray)))
+                                }.aspectRatio(16/9, contentMode: .fill)
+                                
+                            }
+                            HStack() {
+                                VStack(alignment: .leading) {
+                                    Text(subject.title).font(.callout)
+                                    //Text(subject.author).font(.caption)
+                                }
+                                Spacer()
+                                Text("\(subject.views.Abbreviate)\n views").multilineTextAlignment(.center).font(.subheadline)
+                            }.padding(.horizontal)
+                            Divider().frame(height:10).overlay(.bar)
+                        }
+                    }
+                }.listRowInsets(EdgeInsets()).listRowSeparator(.hidden)
+            }.listStyle(.plain)
         }
+        
     }
 }
 

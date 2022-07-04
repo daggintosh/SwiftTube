@@ -84,6 +84,7 @@ struct ContentView: View {
                             Spacer()
                             Text("\(subject.views.Abbreviate)\n views").multilineTextAlignment(.center).font(.subheadline)
                         }.padding(.horizontal)
+                        Spacer()
                         Divider().frame(height:10).overlay(.bar)
                     }
                 }.listRowInsets(EdgeInsets()).listRowSeparator(.hidden)
