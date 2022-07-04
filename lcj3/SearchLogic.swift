@@ -223,8 +223,9 @@ func searchYouTube(phrase: String) -> [Video] {
     
     var decoded: items?
     
-    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=id&maxResults=10&q=\(encodedPhrase)&type=video&key=\(apiKey)")!
-
+    var url = URLRequest(url: URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=id&maxResults=10&q=\(encodedPhrase)&type=video&key=\(apiKey)")!)
+    url.addValue(Bundle.main.bundleIdentifier!, forHTTPHeaderField: "X-Ios-Bundle-Identifier")
+    
     let sem = DispatchSemaphore.init(value: 0)
     let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
         defer { sem.signal() }
@@ -255,7 +256,8 @@ func getDetails(items: items) -> details {
         ids.append("\(item.id),")
     })
     
-    let viewURL = URL(string: "https://youtube.googleapis.com/youtube/v3/videos?part=statistics,snippet&id=\(ids)&key=\(apiKey)")!
+    var viewURL = URLRequest(url: URL(string: "https://youtube.googleapis.com/youtube/v3/videos?part=statistics,snippet&id=\(ids)&key=\(apiKey)")!)
+    viewURL.addValue(Bundle.main.bundleIdentifier!, forHTTPHeaderField: "X-Ios-Bundle-Identifier")
     
     let sem2 = DispatchSemaphore.init(value: 0)
     
@@ -284,7 +286,8 @@ func requestTrending() -> [Video] {
     
     var decoded: details?
 
-    let viewURL = URL(string: "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2Cstatistics&chart=mostPopular&maxResults=10&key=\(apiKey)")!
+    var viewURL = URLRequest(url: URL(string: "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2Cstatistics&chart=mostPopular&maxResults=10&key=\(apiKey)")!)
+    viewURL.addValue(Bundle.main.bundleIdentifier!, forHTTPHeaderField: "X-Ios-Bundle-Identifier")
     
     let sem = DispatchSemaphore.init(value: 0)
     
@@ -317,8 +320,9 @@ func requestRelated(videoId: String) -> [Video] {
     
     var decoded: items?
     
-    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=id&maxResults=10&relatedToVideoId=\(videoId)&type=video&key=\(apiKey)")!
-
+    var url = URLRequest(url: URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=id&maxResults=10&relatedToVideoId=\(videoId)&type=video&key=\(apiKey)")!)
+    url.addValue(Bundle.main.bundleIdentifier!, forHTTPHeaderField: "X-Ios-Bundle-Identifier")
+    
     let sem = DispatchSemaphore.init(value: 0)
     let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
         defer { sem.signal() }
@@ -345,7 +349,8 @@ func requestChannelStats(channelId: String) -> Author {
     
     var decoded: channels?
     
-    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2C%20brandingSettings&id=\(channelId)&key=\(apiKey)")!
+    var url = URLRequest(url: URL(string: "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2C%20brandingSettings&id=\(channelId)&key=\(apiKey)")!)
+    url.addValue(Bundle.main.bundleIdentifier!, forHTTPHeaderField: "X-Ios-Bundle-Identifier")
     
     let sem = DispatchSemaphore.init(value: 0)
     let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
@@ -374,8 +379,9 @@ func requestChannelVideos(channelId: String) -> [Video] {
     var videos: [Video] = []
     
     var decoded: items?
-    let idURL = URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=id&channelId=\(channelId)&type=video&maxResults=10&order=date&key=\(apiKey)")!
-
+    var idURL = URLRequest(url: URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=id&channelId=\(channelId)&type=video&maxResults=10&order=date&key=\(apiKey)")!)
+    idURL.addValue(Bundle.main.bundleIdentifier!, forHTTPHeaderField: "X-Ios-Bundle-Identifier")
+    
     let sem = DispatchSemaphore.init(value: 0)
     let task = URLSession.shared.dataTask(with: idURL) {(data, response, error) in
         defer { sem.signal() }
@@ -404,7 +410,8 @@ func requestComments(videoId: String) -> [Comment] {
     
     var decoded: comments?
     
-    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&order=relevance&videoId=\(videoId)&key=\(apiKey)")!
+    var url = URLRequest(url: URL(string: "https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&order=relevance&videoId=\(videoId)&key=\(apiKey)")!)
+    url.addValue(Bundle.main.bundleIdentifier!, forHTTPHeaderField: "X-Ios-Bundle-Identifier")
     
     let sem = DispatchSemaphore.init(value: 0)
     let task = URLSession.shared.dataTask(with: url) { data, response, error in
