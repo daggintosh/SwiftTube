@@ -330,9 +330,11 @@ func requestRelated(videoId: String) -> [Video] {
     task.resume()
     sem.wait()
     
-    getDetails(items: decoded!).items.forEach({ item in
-        rVid.append(Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: item.title, description: item.description, views: item.viewCount, author: item.channelTitle, id: item.id, publishDate: item.publishedAt, likes: item.likeCount, channelId: item.channelId))
-    })
+    if (decoded) {
+        getDetails(items: decoded!).items.forEach({ item in
+            rVid.append(Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: item.title, description: item.description, views: item.viewCount, author: item.channelTitle, id: item.id, publishDate: item.publishedAt, likes: item.likeCount, channelId: item.channelId))
+        })
+    }
     
     print("The API has been called")
     return rVid
@@ -385,9 +387,11 @@ func requestChannelVideos(channelId: String) -> [Video] {
     task.resume()
     sem.wait()
     
-    getDetails(items: decoded!).items.forEach({ item in
-        videos.append(Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: item.title, description: item.description, views: item.viewCount, author: item.channelTitle, id: item.id, publishDate: item.publishedAt, likes: item.likeCount, channelId: item.channelId))
-    })
+    if(decoded) {
+        getDetails(items: decoded!).items.forEach({ item in
+            videos.append(Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: item.title, description: item.description, views: item.viewCount, author: item.channelTitle, id: item.id, publishDate: item.publishedAt, likes: item.likeCount, channelId: item.channelId))
+        })
+    }
     
     print("The API has been called")
     return videos
@@ -400,7 +404,7 @@ func requestComments(videoId: String) -> [Comment] {
     
     var decoded: comments?
     
-    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&order=relevance&maxResults=100&videoId=\(videoId)&key=\(apiKey)")!
+    let url = URL(string: "https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&order=relevance&videoId=\(videoId)&key=\(apiKey)")!
     
     let sem = DispatchSemaphore.init(value: 0)
     let task = URLSession.shared.dataTask(with: url) { data, response, error in
