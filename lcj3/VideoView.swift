@@ -9,33 +9,52 @@ import SwiftUI
 
 struct VideoView: View {
     
-    var video: Video = Video(thumbnail: "", title: "None", description: "None", views: "", author: "None", id: "9iNxhEn-9D4", publishDate: Date(), likes: "")
+    var video: Video = Video(thumbnail: "", title: "", description: "", views: "", author: "", id: "", publishDate: Date(), likes: "", channelId: "")
+    var isFromChannel: Bool?
     
     var body: some View {
         VStack() {
             WebView(target: video.id).aspectRatio(16/9, contentMode: .fit)
-            HStack() {
-                VStack(alignment: .leading) {
-                    Text(video.title)
-                    Text(video.author).font(.footnote)
-                    HStack() {
-                        Text("\(video.publishDate.formatted(date: .abbreviated, time: .omitted))").font(.caption)
-                        Text("\(video.views.FormatCool) views").font(.caption)
-                        Spacer()
-                        Text("\(video.likes.FormatCool) likes").font(.caption)
-                    }
-                }
-                Spacer()
-            }.padding(.horizontal)
-            Divider().padding(.horizontal)
             ScrollView() {
-                Text(video.description)
+                HStack() {
+                    VStack(alignment: .leading) {
+                        Text(video.title)
+                        Text("Published \(video.publishDate.formatted(date: .abbreviated, time: .omitted))").font(.caption)
+                        HStack() {
+                            Text("\(video.views.FormatCool) views").font(.caption)
+                            Spacer()
+                            Text("\(video.likes.FormatCool) likes").font(.caption)
+                        }
+                    }
+                    Spacer()
+                }
+                Divider()
+                if(!(isFromChannel ?? false)) {
+                    NavigationLink {
+                        AuthorView(cid: video.channelId)
+                    } label: {
+                        HStack() {
+                            Text("\(video.author)")
+                            Image(systemName: "chevron.right")
+                            Spacer()
+                        }
+                    }.padding(.vertical, 1)
+                    Divider()
+                }
+                NavigationLink {
+                    ContentView(resultsTitle: "Related to \(video.author)", displaySearch: false, searchTerm: video.id, searchRelated: true)
+                } label: {
+                    Text("Related Videos")
+                    Image(systemName: "chevron.right")
+                    Spacer()
+                    
+                }.padding(.vertical, 1)
+                Divider()
+                Text(.init(video.description.FixLinks))
             }.padding(.horizontal)
-            Divider().padding(.horizontal)
-            Spacer()
         }.toolbar {
-            NavigationLink("Related") {
-                
+            NavigationLink("Comments") {
+                CommentView(title: video.title, videoId: video.id)
             }
         }
     }
@@ -43,6 +62,8 @@ struct VideoView: View {
 
 struct VideoView_Previews: PreviewProvider {
     static var previews: some View {
-        VideoView()
+        NavigationView {
+            VideoView()
+        }
     }
 }

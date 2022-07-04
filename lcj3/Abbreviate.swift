@@ -47,6 +47,11 @@ extension String {
         }
         
     }
+    var FixLinks: String {
+        let input: String = self
+        let fixed = input.replacingOccurrences(of: "(https?\\S+)", with: "[$1]($1)", options: .regularExpression)
+        return fixed
+    }
 }
 
 func formatAndReturn(input: Double, abbrv: String) -> String {
