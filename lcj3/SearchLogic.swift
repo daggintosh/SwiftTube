@@ -330,7 +330,7 @@ func requestRelated(videoId: String) -> [Video] {
     task.resume()
     sem.wait()
     
-    if (decoded) {
+    if (decoded != nil) {
         getDetails(items: decoded!).items.forEach({ item in
             rVid.append(Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: item.title, description: item.description, views: item.viewCount, author: item.channelTitle, id: item.id, publishDate: item.publishedAt, likes: item.likeCount, channelId: item.channelId))
         })
@@ -387,7 +387,7 @@ func requestChannelVideos(channelId: String) -> [Video] {
     task.resume()
     sem.wait()
     
-    if(decoded) {
+    if(decoded != nil) {
         getDetails(items: decoded!).items.forEach({ item in
             videos.append(Video(thumbnail: "https://i.ytimg.com/vi/\(item.id)/hq720.jpg", title: item.title, description: item.description, views: item.viewCount, author: item.channelTitle, id: item.id, publishDate: item.publishedAt, likes: item.likeCount, channelId: item.channelId))
         })
