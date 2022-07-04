@@ -374,7 +374,7 @@ func requestChannelVideos(channelId: String) -> [Video] {
     var videos: [Video] = []
     
     var decoded: items?
-    let idURL = URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=id&channelId=\(channelId)&maxResults=10&order=date&key=\(apiKey)")!
+    let idURL = URL(string: "https://youtube.googleapis.com/youtube/v3/search?part=id&channelId=\(channelId)&type=video&maxResults=10&order=date&key=\(apiKey)")!
 
     let sem = DispatchSemaphore.init(value: 0)
     let task = URLSession.shared.dataTask(with: idURL) {(data, response, error) in
