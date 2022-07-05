@@ -36,4 +36,5 @@ struct Comment: Identifiable {
     let publishDate: Date
     let replyCount: Int
     let replies: repliesArr?
+    let likeCount: Int
 }

@@ -49,12 +49,13 @@ struct CommentView: View {
                             Spacer()
                             Text(comment.publishDate.formatted(date: .abbreviated, time: .omitted))
                         }
-                        HStack {
-                            Text(comment.comment)
-                            Spacer()
-                        }
+                        Text(comment.comment).frame(maxWidth: .infinity, alignment: .leading)
                     }.padding(.leading)
                 }.padding()
+                HStack {
+                    Image(systemName: "hand.thumbsup.fill").foregroundColor(.accentColor)
+                    Text("\(comment.likeCount)").frame(maxWidth: .infinity, alignment: .leading)
+                }.padding(.horizontal)
                 if(comment.replyCount > 0) {
                     NavigationLink {
                         let replies = processReplies(comments: comment.replies)

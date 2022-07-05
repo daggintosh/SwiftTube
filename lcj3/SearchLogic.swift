@@ -428,7 +428,7 @@ func requestComments(videoId: String) -> [Comment] {
     sem.wait()
     
     decoded?.items.forEach({ item in
-        commentArr.append(Comment(id: item.id, pfp: item.authorImage, author: item.author, comment: item.commentText, publishDate: item.publishDate, replyCount: item.replyCount, replies: item.replies))
+        commentArr.append(Comment(id: item.id, pfp: item.authorImage, author: item.author, comment: item.commentText, publishDate: item.publishDate, replyCount: item.replyCount, replies: item.replies, likeCount: item.commentLikes))
     })
     print("The API has been called")
     return commentArr
@@ -438,10 +438,9 @@ func requestComments(videoId: String) -> [Comment] {
 func processReplies(comments: repliesArr?) -> [Comment] {
     
     var newComments: [Comment] = []
-    let unwrapped = comments.unsafelyUnwrapped
     
-    unwrapped.comments.forEach({ reply in
-        newComments.append(Comment(id: "\(UUID())", pfp: reply.authorImage, author: reply.author, comment: reply.replyText, publishDate: reply.publishDate, replyCount: 0, replies: nil))
+    comments?.comments.forEach({ reply in
+        newComments.append(Comment(id: "\(UUID())", pfp: reply.authorImage, author: reply.author, comment: reply.replyText, publishDate: reply.publishDate, replyCount: 0, replies: nil, likeCount: reply.replyLikes))
     })
     return newComments
 }
